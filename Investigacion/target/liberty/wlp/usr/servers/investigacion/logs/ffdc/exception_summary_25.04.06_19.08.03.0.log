@@ -1,0 +1,9 @@
+
+ Index  Count  Time of first Occurrence    Time of last Occurrence     Exception SourceId ProbeId
+------+------+---------------------------+---------------------------+---------------------------
+     0      3   6/4/2025 19:08:03:412 CST   6/4/2025 19:10:37:078 CST java.lang.NoClassDefFoundError com.ibm.ws.injectionengine.InjectionProcessorManager.getAllDeclaredFields 249
+                                                                            - D:\InvestigacionAplicada\target\liberty\wlp\usr\servers\investigacion\logs\ffdc\ffdc_25.04.06_19.08.03.0.log
+     1      9   6/4/2025 19:08:22:188 CST   6/4/2025 19:12:56:895 CST jakarta.servlet.ServletException com.ibm.ws.webcontainer.filter.FilterInstanceWrapper.doFilter 144
+                                                                            - D:\InvestigacionAplicada\target\liberty\wlp\usr\servers\investigacion\logs\ffdc\ffdc_25.04.06_19.08.22.1.log
+                                                                            - D:\InvestigacionAplicada\target\liberty\wlp\usr\servers\investigacion\logs\ffdc\ffdc_25.04.06_19.08.22.0.log
+------+------+---------------------------+---------------------------+---------------------------
