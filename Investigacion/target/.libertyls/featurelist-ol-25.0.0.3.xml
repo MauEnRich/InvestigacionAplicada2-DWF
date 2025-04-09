@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<featureInfo name="core" location="D:\InvestigacionAplicada\target\liberty\wlp"> 
+<featureInfo name="core" location="D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\target\liberty\wlp"> 
     <privateFeature> 
         <symbolicName>com.ibm.websphere.appserver.adminSecurity-2.0</symbolicName> 
         <singleton>true</singleton> 

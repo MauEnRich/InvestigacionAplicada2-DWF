@@ -3,13 +3,13 @@
     <activeBuildProfiles>
         <profileId>liberty</profileId>
     </activeBuildProfiles>
-    <installDirectory>D:\InvestigacionAplicada\target\liberty\wlp</installDirectory>
-    <serverDirectory>D:\InvestigacionAplicada\target\liberty\wlp\usr\servers\investigacion</serverDirectory>
-    <userDirectory>D:\InvestigacionAplicada\target\liberty\wlp\usr</userDirectory>
-    <serverOutputDirectory>D:\InvestigacionAplicada\target\wlp-package\investigacion</serverOutputDirectory>
+    <installDirectory>D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\target\liberty\wlp</installDirectory>
+    <serverDirectory>D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\target\liberty\wlp\usr\servers\investigacion</serverDirectory>
+    <userDirectory>D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\target\liberty\wlp\usr</userDirectory>
+    <serverOutputDirectory>D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\target\wlp-package\investigacion</serverOutputDirectory>
     <serverName>investigacion</serverName>
-    <configDirectory>D:\InvestigacionAplicada\src\main\liberty\config</configDirectory>
-    <configFile>D:\InvestigacionAplicada\src\main\liberty\config\server.xml</configFile>
+    <configDirectory>D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\src\main\liberty\config</configDirectory>
+    <configFile>D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\src\main\liberty\config\server.xml</configFile>
     <bootstrapProperties>
         <app.context.root>/</app.context.root>
         <jwt.issuer>https://server.example.com</jwt.issuer>
@@ -27,9 +27,9 @@
         <type>zip</type>
     </assemblyArtifact>
     <assemblyArchive>C:\Users\mauri\.m2\repository\io\openliberty\openliberty-kernel\25.0.0.3\openliberty-kernel-25.0.0.3.zip</assemblyArchive>
-    <assemblyInstallDirectory>D:\InvestigacionAplicada\target\liberty</assemblyInstallDirectory>
+    <assemblyInstallDirectory>D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\target\liberty</assemblyInstallDirectory>
     <refresh>false</refresh>
-    <installAppsConfigDropins>D:\InvestigacionAplicada\target\liberty\wlp\usr\servers\investigacion\configDropins\defaults\install_apps_configuration_1491924271.xml</installAppsConfigDropins>
+    <installAppsConfigDropins>D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\target\liberty\wlp\usr\servers\investigacion\configDropins\defaults\install_apps_configuration_1491924271.xml</installAppsConfigDropins>
     <projectType>war</projectType>
     <projectCompileDependency>org.hibernate:hibernate-core:5.4.26.Final</projectCompileDependency>
     <projectCompileDependency>org.jboss.logging:jboss-logging:3.4.1.Final</projectCompileDependency>
@@ -68,5 +68,5 @@
     <projectCompileDependency>io.opentracing.contrib:opentracing-tracerresolver:0.1.8</projectCompileDependency>
     <projectCompileDependency>org.slf4j:slf4j-api:1.7.30</projectCompileDependency>
     <projectCompileDependency>org.slf4j:slf4j-jdk14:1.7.30</projectCompileDependency>
-    <warSourceDirectory>D:\InvestigacionAplicada\src\main\webapp</warSourceDirectory>
+    <warSourceDirectory>D:\MauEnRich\Repositorio_DWF\IA2\InvestigacionAplicada2-DWF\Investigacion\src\main\webapp</warSourceDirectory>
 </liberty-plugin-config>
