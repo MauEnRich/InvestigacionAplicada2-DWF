@@ -1,0 +1,944 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:ext="http://www.ibm.com/xmlns/dde/schema/annotation/ext">
+    <xsd:complexType name="com.ibm.ws.logging.binaryTrace">
+        <xsd:annotation>
+            <xsd:documentation>Opciones de rastreo binario.  El rastreo binario puede visualizarse utilizando el mandato logViewer.</xsd:documentation>
+            <xsd:appinfo>
+                <ext:label>Rastreo binario</ext:label>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <!--Idiom for "empty element context" (whitespace accepted and ignored)-->
+        <xsd:sequence>
+            <xsd:sequence/>
+        </xsd:sequence>
+        <xsd:attribute default="50" name="purgeMaxSize" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especifica el tamaño máximo para el repositorio de rastreo binario en megabytes.  Si el valor de purgeMaxSize se especifica con un valor superior a 0, se habilita la limpieza en función del tamaño del repositorio; de lo contrario, se inhabilitará; un valor 0 significa que no hay límite.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Tamaño máximo de repositorio</ext:label>
+                    <ext:variable>com.ibm.hpel.trace.purgeMaxSize</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:int">
+                            <xsd:minInclusive value="0"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="0" name="purgeMinTime" type="hourDuration" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especifica la duración, en horas, tras la cual un servidor puede eliminar un registro de rastreo.  Si el valor de purgeMinTime se especifica con un valor superior a 0, se habilita la limpieza en función de la antigüedad del registro de rastreo; de lo contrario, se inhabilitará; un valor 0 significa que no hay límite. Especifica un entero positivo seguido de la unidad de tiempo, que puede ser horas (h). Por ejemplo, especifique 12 horas como 12h.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Tiempo de retención mínimo</ext:label>
+                    <ext:variable>com.ibm.hpel.trace.purgeMinTime</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="fileSwitchTime" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Hace que el servidor cierre el archivo de rastreo activo e inicie uno nuevo a la hora del día especificada.  Si se especifica el valor de fileSwitchTime, se habilita la conmutación de archivos; de lo contrario, se inhabilitará.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Hora del día a la que se cambia el archivo</ext:label>
+                    <ext:variable>com.ibm.hpel.trace.fileSwitchTime</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:int">
+                            <xsd:minInclusive value="0"/>
+                            <xsd:maxInclusive value="23"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="true" name="bufferingEnabled" type="booleanType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especifica si debe permitir un pequeño retraso al guardar los registros en el disco para mejorar el rendimiento.  Si bufferingEnabled se establece en true, los registros se conservarán brevemente en la memoria antes de grabarlos en disco.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Habilitar almacenamiento intermedio de salida</ext:label>
+                    <ext:variable>com.ibm.hpel.trace.bufferingEnabled</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="StopLogging" name="outOfSpaceAction" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especifica la acción que se realizará cuando el sistema de archivos donde se guardan los registros se queda sin espacio libre.  Si outOfSpaceAction se establece en "StopLogging", el servidor detendrá el rastreo cuando los registros no puedan grabarse en disco.  Cuando este atributo se establece en "PurgeOld", el servidor intentará suprimir los registros más antiguos del repositorio de rastreo binario para dejar espacio a los nuevos registros.  Cuando este atributo se establece en "StopServer", el rastreo binario detendrá el servidor cuando no se puedan grabar registros.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Acción si no pueden almacenarse datos</ext:label>
+                    <ext:variable>com.ibm.hpel.trace.outOfSpaceAction</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="StopServer">
+                                <xsd:annotation>
+                                    <xsd:documentation>Detener el servidor</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="PurgeOld">
+                                <xsd:annotation>
+                                    <xsd:documentation>Eliminar registros antiguos</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="StopLogging">
+                                <xsd:annotation>
+                                    <xsd:documentation>Detener anotaciones</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="com.ibm.ws.logging.binaryLog">
+        <xsd:annotation>
+            <xsd:documentation>Opciones de registro binario.  El registro binario puede visualizarse utilizando el mandato logViewer.</xsd:documentation>
+            <xsd:appinfo>
+                <ext:label>Registro binario</ext:label>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <!--Idiom for "empty element context" (whitespace accepted and ignored)-->
+        <xsd:sequence>
+            <xsd:sequence/>
+        </xsd:sequence>
+        <xsd:attribute default="50" name="purgeMaxSize" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especifica el tamaño máximo para el repositorio de registro binario en megabytes.  Si el valor de purgeMaxSize se especifica con un valor superior a 0, se habilita la limpieza en función del tamaño del repositorio; de lo contrario, se inhabilitará; un valor 0 significa que no hay límite.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Tamaño máximo de repositorio</ext:label>
+                    <ext:variable>com.ibm.hpel.log.purgeMaxSize</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:int">
+                            <xsd:minInclusive value="0"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="0" name="purgeMinTime" type="hourDuration" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especifica la duración, en horas, tras la cual un servidor puede eliminar un registro de anotaciones.  Si el valor de purgeMinTime se especifica con un valor superior a 0, se habilita la limpieza en función de la antigüedad del registro de anotaciones; de lo contrario, se inhabilitará; un valor 0 significa que no hay límite. Especifica un entero positivo seguido de la unidad de tiempo, que puede ser horas (h). Por ejemplo, especifique 12 horas como 12h.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Tiempo de retención mínimo</ext:label>
+                    <ext:variable>com.ibm.hpel.log.purgeMinTime</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="fileSwitchTime" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Hace que el servidor cierre el archivo de registro activo e inicie uno nuevo a la hora del día especificada.  Si se especifica el valor de fileSwitchTime, se habilita la conmutación de archivos; de lo contrario, se inhabilitará.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Hora del día a la que se cambia el archivo</ext:label>
+                    <ext:variable>com.ibm.hpel.log.fileSwitchTime</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:int">
+                            <xsd:minInclusive value="0"/>
+                            <xsd:maxInclusive value="23"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="true" name="bufferingEnabled" type="booleanType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especifica si debe permitirse un pequeño retraso al guardar los registros en el disco para mejorar el rendimiento.  Si bufferingEnabled se establece en true, los registros se conservarán brevemente en la memoria antes de grabarlos en disco.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Habilitar almacenamiento intermedio de salida</ext:label>
+                    <ext:variable>com.ibm.hpel.log.bufferingEnabled</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="StopLogging" name="outOfSpaceAction" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especifica la acción que se realizará cuando el sistema de archivos donde se guardan los registros se queda sin espacio libre.  Si outOfSpaceAction se establece en "StopLogging", el servidor detendrá el registro cuando los registros no puedan grabarse en disco.  Cuando este atributo se establece en "PurgeOld", el servidor intentará suprimir los registros más antiguos del repositorio de registro binario para dejar espacio a los nuevos registros.  Cuando este atributo se establece en "StopServer", el registro binario detendrá el servidor cuando no se puedan grabar registros.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Acción si no pueden almacenarse datos</ext:label>
+                    <ext:variable>com.ibm.hpel.log.outOfSpaceAction</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="StopServer">
+                                <xsd:annotation>
+                                    <xsd:documentation>Detener el servidor</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="PurgeOld">
+                                <xsd:annotation>
+                                    <xsd:documentation>Eliminar registros antiguos</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="StopLogging">
+                                <xsd:annotation>
+                                    <xsd:documentation>Detener anotaciones</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="com.ibm.ws.config">
+        <xsd:annotation>
+            <xsd:documentation>Define cómo el servidor procesa la información de configuración.</xsd:documentation>
+            <xsd:appinfo>
+                <ext:label>Gestión de configuración</ext:label>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <!--Idiom for "empty element context" (whitespace accepted and ignored)-->
+        <xsd:sequence>
+            <xsd:sequence/>
+        </xsd:sequence>
+        <xsd:attribute default="WARN" name="onError" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Acción a realizar después de un error de configuración. </xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>En caso de error</ext:label>
+                    <ext:variable>onError</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="WARN">
+                                <xsd:annotation>
+                                    <xsd:documentation>El servidor emitirá mensajes de aviso y error cuando se produzca un error de configuración. </xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="FAIL">
+                                <xsd:annotation>
+                                    <xsd:documentation>El servidor emitirá un mensaje de aviso o error con el primer error y después se detendrá el servidor.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="IGNORE">
+                                <xsd:annotation>
+                                    <xsd:documentation>El servidor no emitirá mensajes de aviso y error cuando se produzca un error de configuración.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="500ms" name="monitorInterval" type="duration" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Velocidad con la que el servidor comprueba las actualizaciones de configuración. Especifica un entero positivo seguido de una unidad de tiempo, que puede ser horas (h), minutos (m), segundos (s) o milisegundos (ms). Por ejemplo, especifique 500 milisegundos como 500ms. Puede incluir varios valores en una sola entrada. Por ejemplo, 1s500ms es equivalente a 1,5 segundos.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Velocidad de sondeo de actualización</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="polled" name="updateTrigger" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Desencadenante o método de actualizaciones de configuración.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Desencadenante de actualizaciones</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="polled">
+                                <xsd:annotation>
+                                    <xsd:documentation>El servidor explorará en busca de cambios en el intervalo de sondeo de todos los archivos de configuración y actualizará la configuración de tiempo de ejecución con los cambios detectados.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="mbean">
+                                <xsd:annotation>
+                                    <xsd:documentation>El servidor sólo actualizará la configuración cuando FileNotificationMbean lo solicite. Normalmente es un programa externo, como un entorno de desarrollo integrado o una aplicación de gestión, quien invoca FileNotificationMbean.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="disabled">
+                                <xsd:annotation>
+                                    <xsd:documentation>Inhabilita toda la supervisión de actualización. Los cambios de configuración no se aplicarán mientras el servidor esté en ejecución.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="com.ibm.ws.kernel.metatype.helper.fileset">
+        <xsd:annotation>
+            <xsd:documentation>Especifica un conjunto de archivos empezando por un directorio base y coincidente con un conjunto de patrones. </xsd:documentation>
+            <xsd:appinfo>
+                <ext:label>Conjunto de archivos</ext:label>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <!--Idiom for "empty element context" (whitespace accepted and ignored)-->
+        <xsd:sequence>
+            <xsd:sequence/>
+        </xsd:sequence>
+        <xsd:attribute default="${server.config.dir}" name="dir" type="dirLocation" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Directorio base para buscar archivos</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Directorio base</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="true" name="caseSensitive" type="booleanType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Valor booleano que indica si la búsqueda debe ser sensible a las mayúsculas y minúsculas (valor por omisión: true).</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Sensible a las mayúsculas y minúsculas</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="*" name="includes" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Lista de patrones de nombres de archivo separados por comas o espacios que se incluyen en los resultados de la búsqueda (valor por omisión: *).</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Incluye el patrón</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="" name="excludes" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Lista de patrones de nombres de archivo separados por comas o espacios que se excluyen de los resultados de la búsqueda. Por omisión, no se excluye ningún archivo.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Excluye el patrón</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="0" name="scanInterval" type="duration" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>El intervalo de exploración para determinar si los archivos se añaden o eliminan del conjunto de archivos. Los archivos individuales no se exploran. El sufijo del intervalo de tiempo es h-hora, m-minuto, s-segundo y ms-milisegundo, por ejemplo, 2ms o 5s. El intervalo de exploración está inhabilitado de forma predeterminada y se inhabilita manualmente estableciendo el intervalo de exploración, scanInterval, en 0. Especifica un entero positivo seguido de una unidad de tiempo, que puede ser horas (h), minutos (m), segundos (s) o milisegundos (ms). Por ejemplo, especifique 500 milisegundos como 500ms. Puede incluir varios valores en una sola entrada. Por ejemplo, 1s500ms es equivalente a 1,5 segundos.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Intervalo de exploración</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="com.ibm.ws.kernel.metatype.helper.fileset-factory">
+        <xsd:complexContent>
+            <xsd:extension base="com.ibm.ws.kernel.metatype.helper.fileset">
+                <xsd:attribute name="id" type="factoryIdType" use="optional">
+                    <xsd:annotation>
+                        <xsd:documentation>Un ID de configuración exclusivo.</xsd:documentation>
+                        <xsd:appinfo>
+                            <ext:label>ID</ext:label>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                </xsd:attribute>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    <xsd:complexType name="com.ibm.ws.threading">
+        <xsd:annotation>
+            <xsd:documentation>Define los valores para el ejecutor predeterminado del kernel de Liberty.  Tenga en cuenta que siempre existe un único ejecutor predeterminado para que lo utilice únicamente el tiempo de ejecución de Liberty y no para que otras aplicaciones puedan acceder al mismo de forma directa.  Las aplicaciones que necesitan configurar y utilizar los ejecutores deberán utilizar, en su lugar, los ejecutores gestionados.</xsd:documentation>
+            <xsd:appinfo>
+                <ext:label>Gestión del ejecutor</ext:label>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <!--Idiom for "empty element context" (whitespace accepted and ignored)-->
+        <xsd:sequence>
+            <xsd:sequence/>
+        </xsd:sequence>
+        <xsd:attribute default="Default Executor" name="name" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>El nombre del ejecutor predeterminado del kernel de Liberty.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Nombre</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="-1" name="maxThreads" type="intType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Número máximo de hebras que se puede asociar con el ejecutor. Si es mayor que 0, el valor mínimo de maxThreads es 4, y debe ser al menos tan grande como coreThreads; si el valor de maxThreads establecido es inferior al de coreThreads, Liberty reducirá coreThreads al valor de maxThreads. Si el valor de maxThreads es menor o igual que 0, el número máximo de hebras no tiene límites, lo cual permite al kernel de Liberty decidir el número de hebras que deben asociarse con el ejecutor sin tener un límite superior definido.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Máximo de hebras</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="-1" name="coreThreads" type="intType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Línea base o número mínimo de hebras que se van a asociar con el ejecutor. El número de hebras asociadas con el ejecutor alcanzará rápidamente este número. Si este valor es menor que 0, se utiliza un valor predeterminado, que se calcula basándose en el número de hebras de hardware del sistema. Si el valor es un número positivo menor de 4, se utiliza un valor predeterminado de 4.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Hebras principales</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="com.ibm.ws.kernel.feature">
+        <xsd:annotation>
+            <xsd:documentation>Define la forma en que el servidor carga las características.</xsd:documentation>
+            <xsd:appinfo>
+                <ext:label>Gestor de características</ext:label>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:choice maxOccurs="unbounded" minOccurs="0">
+            <xsd:element name="platform" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>La plataforma especifica una versión del modelo de programación, por ejemplo jakartaee-10.0. La versión de la plataforma determina la versión de cualquier función sin versión habilitada que se incluya en la plataforma especificada. </xsd:documentation>
+                    <xsd:appinfo>
+                        <ext:label>Plataforma</ext:label>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="feature" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>Especifica una característica que se va a utilizar cuando se ejecute el servidor. </xsd:documentation>
+                    <xsd:appinfo>
+                        <ext:label>Característica</ext:label>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:choice>
+        <xsd:attribute default="WARN" name="onError" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Acción a realizar después de una anomalía para cargar una característica. </xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>En caso de error</ext:label>
+                    <ext:variable>onError</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="WARN">
+                                <xsd:annotation>
+                                    <xsd:documentation>El servidor emitirá mensajes de aviso y error cuando se produzca un error de configuración. </xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="FAIL">
+                                <xsd:annotation>
+                                    <xsd:documentation>El servidor emitirá un mensaje de aviso o error con el primer error y después se detendrá el servidor.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="IGNORE">
+                                <xsd:annotation>
+                                    <xsd:documentation>El servidor no emitirá mensajes de aviso y error cuando se produzca un error de configuración.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="com.ibm.ws.logging">
+        <xsd:annotation>
+            <xsd:documentation>Controla la captura y la salida de los mensajes de registro y rastreo.</xsd:documentation>
+            <xsd:appinfo>
+                <ext:label>Registro cronológico</ext:label>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:choice maxOccurs="unbounded" minOccurs="0">
+            <xsd:element name="binaryTrace" type="com.ibm.ws.logging.binaryTrace"/>
+            <xsd:element name="binaryLog" type="com.ibm.ws.logging.binaryLog"/>
+        </xsd:choice>
+        <xsd:attribute default="20" name="maxFileSize" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>El tamaño máximo (en MB) que un archivo de registro puede alcanzar antes de que se reinicie. El entorno de ejecución de Liberty solo realiza reinicios de registro basados en el tamaño. Para inhabilitar este atributo, establezca el valor en 0. El tamaño máximo de archivo es aproximado. De forma predeterminada, el valor es 20. Nota: maxFileSize no se aplica al archivo console.log.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Tamaño máximo del archivo de registro</ext:label>
+                    <ext:variable>com.ibm.ws.logging.max.file.size</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:int">
+                            <xsd:minInclusive value="0"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="2" name="maxFiles" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Número máximo de archivos de registro que se mantienen antes de que se elimine el archivo más antiguo; un valor de 0 significa que no hay ningún límite. Si existe un tamaño de archivo máximo impuesto, este valor se utiliza para determinar qué cantidad de cada uno de los archivos de registro se conserva. Este valor también se aplica al número de registros de excepción que resumen las excepciones que se han producido en un día en particular. Por lo tanto, si este número es 10, puede tener 10 registros de mensajes, 10 registros de rastreo y 10 resúmenes de excepciones en el directorio ffdc/. De forma predeterminada, el valor es 2. Nota: maxFiles no se aplica al archivo console.log.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Máximo de archivos de registro</ext:label>
+                    <ext:variable>com.ibm.ws.logging.max.files</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:int">
+                            <xsd:minInclusive value="0"/>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="${server.output.dir}/logs" name="logDirectory" type="dirLocation" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Puede utilizar este atributo para establecer un directorio para todos los archivos de registro, excluyendo el archivo console.log, pero incluyendo FFDC. De forma predeterminada, logDirectory se establece en la variable de entorno LOG_DIR. La vía de acceso predeterminada de la variable de entorno LOG_DIR es WLP_OUTPUT_DIR/serverName/logs. Evite problemas: utilice la variable de entorno LOG_DIR o la propiedad com.ibm.ws.logging.log.directory, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Directorio de anotaciones cronológicas</ext:label>
+                    <ext:variable>com.ibm.ws.logging.log.directory</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="messages.log" name="messageFileName" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Nombre del archivo donde se graba la salida de mensajes en relación al directorio de registro configurado. El valor por omisión es messages.log. Este archivo siempre existe y contiene mensajes INFO y otros mensajes (AUDIT, WARNING, ERROR, FAILURE), además de System.out y System.err. Este registro también contiene las indicaciones de fecha y hora, y el ID de la hebra de emisión. Si el archivo de registro se retrotrae, los nombres de archivos de registro anteriores tienen el formato messages_timestamp.log. Evite problemas: utilice la propiedad com.ibm.ws.logging.message.file.name, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Nombre de archivo de mensaje</ext:label>
+                    <ext:variable>com.ibm.ws.logging.message.file.name</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="trace.log" name="traceFileName" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Nombre del archivo donde se graba la salida de rastreo en relación al directorio de registro configurado. El valor por omisión es trace.log. El archivo trace.log solo se crea si se establece traceSpecification que incluye niveles de registro por debajo INFO. La salida estándar (stdout) se reconoce como un valor especial y hace que el rastreo se dirija a la corriente de salida estándar original. Evite problemas: utilice la propiedad com.ibm.ws.logging.trace.file.name, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Nombre de archivo de rastreo</ext:label>
+                    <ext:variable>com.ibm.ws.logging.trace.file.name</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="*=info" name="traceSpecification" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especificación de rastreo que se ajusta a la gramática de especificación de rastreo y especifica el estado inicial de varios componentes de rastreo. La especificación de rastreo se utiliza para habilitar el rastreo de forma selectiva. Se permite un valor vacío, que se trata como 'inhabilitar todo el rastreo'. Cualquier componente no especificado se inicializará con el estado por omisión *=info.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Especificación de rastreo</ext:label>
+                    <ext:variable>com.ibm.ws.logging.trace.specification</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="hideMessage" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Lista de mensajes, separados por una coma, que se han configurado para ocultarse de los archivos console.log y messages.log. Si los mensajes se han configurado para ocultarse, se redireccionan al archivo trace.log. Evite problemas: utilice la propiedad com.ibm.ws.logging.hideMessage, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Mensajes que se van a ocultar</ext:label>
+                    <ext:variable>com.ibm.ws.logging.hideMessage</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="message" name="messageSource" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Lista de orígenes separados por coma que direccionan al archivo messages.log. Esta propiedad sólo se aplica cuando messageFormat=json. Los valores válidos son message, trace, accessLog, ffdc y audit. De forma predeterminada, messageSource se establece en la variable de entorno WLP_LOGGING_MESSAGE_SOURCE (si se ha establecido), o mensaje. Nota: para utilizar el origen de auditoría, habilite la característica de auditoría de Liberty. Habilite los registros de acceso estableciendo un elemento accessLogging para el httpEndpoint. Evite problemas: utilice la variable de entorno WLP_LOGGING_MESSAGE_SOURCE o la propiedad com.ibm.ws.logging.message.source, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Origen de mensajes</ext:label>
+                    <ext:variable>com.ibm.ws.logging.message.source</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="SIMPLE" name="messageFormat" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>El formato necesario para el archivo messages.log. Los valores válidos son el formato SIMPLE o JSON. De forma predeterminada, messageFormat se establece en la variable de entorno WLP_LOGGING_MESSAGE_FORMAT (si se ha establecido) o SIMPLE. Evite problemas: utilice la variable de entorno WLP_LOGGING_MESSAGE_FORMAT o la propiedad com.ibm.ws.logging.message.format, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Formato de mensaje</ext:label>
+                    <ext:variable>com.ibm.ws.logging.message.format</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="SIMPLE">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de registro simple.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="TBASIC">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de registro tbasic.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="JSON">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de registro JSON.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="message" name="consoleSource" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Lista de orígenes separados por coma que direccionan a console/console.log. Esta propiedad sólo se aplica cuando consoleFormat=json. Los valores válidos son message, trace, accessLog, ffdc y audit. De forma predeterminada, consoleSource se establece en la variable de entorno WLP_LOGGING_CONSOLE_SOURCE (si se ha establecido), o mensaje. Nota: para utilizar el origen de auditoría, habilite la característica de auditoría de Liberty. Habilite los registros de acceso estableciendo un elemento accessLogging para el httpEndpoint. Evite problemas: utilice la variable de entorno WLP_LOGGING_CONSOLE_SOURCE o la propiedad com.ibm.ws.logging.console.source, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Origen de consola</ext:label>
+                    <ext:variable>com.ibm.ws.logging.console.source</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="DEV" name="consoleFormat" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>El formato necesario de la consola. Los valores válidos son el formato DEV, SIMPLE o JSON. De forma predeterminada, consoleFormat se establece en la variable de entorno WLP_LOGGING_CONSOLE_FORMAT (si se ha establecido) o DEV. Evite problemas: utilice la variable de entorno WLP_LOGGING_CONSOLE_FORMAT o la propiedad com.ibm.ws.logging.console.format, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Formato de consola</ext:label>
+                    <ext:variable>com.ibm.ws.logging.console.format</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="DEV">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de registro DEV.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="SIMPLE">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de registro simple.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="TBASIC">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de registro tbasic.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="JSON">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de registro JSON.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="ENHANCED" name="traceFormat" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Este formato se utiliza para el registro de rastreo. Evite problemas: utilice la propiedad com.ibm.ws.logging.trace.format, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Formato de rastreo</ext:label>
+                    <ext:variable>com.ibm.ws.logging.trace.format</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="BASIC">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de rastreo básico.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="TBASIC">
+                                <xsd:annotation>
+                                    <xsd:documentation>Alias del formato de rastreo básico.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="ENHANCED">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de rastreo básico mejorado.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="ADVANCED">
+                                <xsd:annotation>
+                                    <xsd:documentation>Se utiliza el formato de rastreo avanzado.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="false" name="isoDateFormat" type="booleanType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>La fecha y la hora utilizan un formato específico del entorno local o el formato ISO-8601. Puede especifica true o false para el valor del atributo o el valor de la propiedad equivalente. El valor predeterminado es false. Evite problemas: utilice la propiedad com.ibm.ws.logging.isoDateFormat, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio. Si especifica un valor true, se utiliza el formato ISO-8601 en el archivo messages.log, el archivo trace.log y los registros FFDC. El formato es aaaa-MM-dd'T'HH:mm:ss.SSSZ. Si especifica un valor false, el formato de fecha y hora será el establecido en el entorno local predeterminado del sistema. Si no se encuentra el entorno local predeterminado, el formato es dd/MMM/aaaa HH:mm:ss:SSS z.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Utilice el formato de fecha ISO 8601.</ext:label>
+                    <ext:variable>com.ibm.ws.logging.isoDateFormat</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="false" name="stackTraceSingleEntry" type="booleanType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Manejar rastreos de pila escritos en System.out/System.err como un único suceso en los registros. </xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Formatear rastreos de pila como un único suceso en registros</ext:label>
+                    <ext:variable>com.ibm.ws.logging.stackTraceSingleEntry</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="AUDIT" name="consoleLogLevel" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>El nivel de registro cronológico utilizado para filtrar los mensajes escritos en las corrientes del sistema. Los valores válidos son INFO, AUDIT, WARNING, ERROR y OFF. De forma predeterminada, consoleLogLevel se establece en la variable de entorno WLP_LOGGING_CONSOLE_LOGLEVEL (si se ha establecido) o AUDIT. Nota: antes de cambiar este valor, tenga en cuenta la información de la sección "No se puede interactuar con el servidor Liberty tras modificar los valores de nivel de registro de consola" en el tema de restricciones conocidas de las herramientas del desarrollador. Evite problemas: utilice la variable de entorno WLP_LOGGING_CONSOLE_LOGLEVEL o la propiedad com.ibm.ws.logging.console.level, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Nivel de registro de consola</ext:label>
+                    <ext:variable>com.ibm.ws.logging.console.log.level</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="INFO">
+                                <xsd:annotation>
+                                    <xsd:documentation>Los mensajes de información, auditoría y aviso se escribirán en la corriente de salida del sistema. Los mensajes de error se escribirán en la corriente de error del sistema.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="AUDIT">
+                                <xsd:annotation>
+                                    <xsd:documentation>Los mensajes de auditoría y aviso se escribirán en la corriente de salida del sistema. Los mensajes de error se escribirán en la corriente de error del sistema.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="WARNING">
+                                <xsd:annotation>
+                                    <xsd:documentation>Los mensajes de aviso se escribirán en la corriente de salida del sistema. Los mensajes de error se escribirán en la corriente de error del sistema.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="ERROR">
+                                <xsd:annotation>
+                                    <xsd:documentation>Los mensajes de error se escribirán en la corriente de error del sistema.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="OFF">
+                                <xsd:annotation>
+                                    <xsd:documentation>No se escribe ninguna salida de servidor en las corrientes de sistema. Sólo se escribe salida JVM en las corrientes de sistema.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="true" name="copySystemStreams" type="booleanType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Si es true, los mensajes que se graban en las corrientes de System.out y System.err se copian en console.log. Si es false, estos mensajes se grabarán en los registros configurados como, por ejemplo, messages.log o trace.log pero no se copiarán en console.log. El valor por omisión es true. Evite problemas: utilice la propiedad com.ibm.ws.logging.copy.system.streams, excepto en los casos en los que esté intentando cambiar la configuración dinámicamente después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Copiar System.out y System.err en las corrientes del sistema</ext:label>
+                    <ext:variable>com.ibm.ws.logging.copy.system.streams</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="false" name="suppressSensitiveTrace" type="booleanType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Cuando este atributo se establece en true, impide que la información potencialmente confidencial se exponga en archivos de registro y rastreo. El valor predeterminado es false. Evite problemas: Utilice la propiedad com.ibm.ws.logging.suppress.sensitive.trace, excepto en los casos en los que esté intentando cambiar la configuración de forma dinámica después del inicio.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Suprimir rastreo de datos confidenciales</ext:label>
+                    <ext:variable>com.ibm.ws.logging.suppress.sensitive.trace</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="" name="jsonFieldMappings" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Cuando los registros están en formato JSON, utilice este atributo para sustituir los nombres de campo predeterminados por los nombres de campo nuevos o para omitir campos en los registros. Para sustituir un nombre de campo, configure el nuevo nombre de campo utilizando el formato siguiente: nombreCampoPredeterminado:nuevoNombreCampo?. Para los nombres de campo que están asociados con registros de un origen especificado, utilice el formato siguiente: [origen:]?nombreCampoPredeterminado:nuevoNombreCampo?, donde [origen] es el origen que desea especificar, por ejemplo message, trace o accessLog. Para omitir un campo en los registros, especifique el nombre de campo sin sustituirlo, como se muestra en el ejemplo siguiente: nombreCampoPredeterminado:. Para renombrar u omitir varios campos, especifique una lista separada por comas de correlaciones de nombres de campo.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Los nombres de campo JSON que se están sustituyendo</ext:label>
+                    <ext:variable>com.ibm.ws.logging.json.field.mappings</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="default" name="jsonAccessLogFields" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Cuando los registros están en formato JSON, utilice este atributo para elegir entre el uso de los campos de registro de acceso especificados en la propiedad accessLogging logFormat o de los campos de registro de acceso predeterminados.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Los campos JSON que deben utilizarse de los registros de acceso</ext:label>
+                    <ext:variable>com.ibm.ws.logging.json.access.log.fields</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="default">
+                                <xsd:annotation>
+                                    <xsd:documentation>Utilizar el conjunto predeterminado de campos de registro de acceso.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="logFormat">
+                                <xsd:annotation>
+                                    <xsd:documentation>Utilizar el conjunto de campos de registro de acceso que coincidan con logFormat.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+        <xsd:attribute default="false" name="appsWriteJson" type="booleanType" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Cuando el registro de mensajes o de consola está en formato JSON, permitir que las aplicaciones escriban mensajes en formato JSON en dichos destinos, sin modificaciones.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Permitir que las aplicaciones escriban en JSON</ext:label>
+                    <ext:variable>com.ibm.ws.logging.apps.write.json</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="" name="rolloverStartTime" type="xsd:string" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>La hora planificada del día para que los registros se reinicien por primera vez. La duración del intervalo de reinicio comienza a la hora de inicio del reinicio. Los valores válidos siguen un formato de fecha y hora ISO-8601 de 24 horas de HH:MM, donde 00:00 representa la medianoche. Se necesitan ceros de relleno. Si se especifica rolloverInterval, el valor predeterminado de rolloverStartTime es 00:00, medianoche. Si no se especifican tanto rolloverInterval como rolloverStartTime, el reinicio del registro basado en tiempo está inhabilitado. Nota: rolloverStartTime no se aplica al archivo console.log.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Tiempo de inicio del reinicio para el reinicio del registro basado en tiempo</ext:label>
+                    <ext:variable>com.ibm.ws.logging.rollover.start.time</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="-1" name="rolloverInterval" type="minuteDuration" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>El intervalo de tiempo entre los reinicios del registro, en minutos si no se especifica una unidad de tiempo. Especifique un entero positivo seguido de una unidad de tiempo, que puede ser días (d), horas (h), o minutos (m). Por ejemplo, especifique 5 horas como 5h. Puede incluir varios valores en una sola entrada. Por ejemplo, 1d5h equivale a 1 día y 5 horas. Si se especifica rolloverStartTime, el valor predeterminado de rolloverInterval es 1 día. Si no se especifican tanto rolloverInterval como rolloverStartTime, el reinicio del registro basado en tiempo está inhabilitado. Nota: rolloverInterval no se aplica al archivo console.log. Especifica un entero positivo seguido de una unidad de tiempo, que puede ser horas (h) o minutos (m). Por ejemplo, especifique 30 minutos como 30m. Puede incluir varios valores en una sola entrada. Por ejemplo, 1h30m es equivalente a 90 minutos.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Intervalo de reinicio para el reinicio del registro basado en tiempo</ext:label>
+                    <ext:variable>com.ibm.ws.logging.rollover.interval</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="-1" name="maxFfdcAge" type="minuteDuration" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>La antigüedad máxima deseada antes de que se suprima un archivo FFDC. Especifique un entero positivo seguido de una unidad de tiempo, que puede ser días (d), horas (h), o minutos (m). Por ejemplo, especifique 2 días como 2d. Puede incluir varios valores en una sola entrada. Por ejemplo, 2d6h es equivalente a 2 días y 6 horas. Todos los días a medianoche, cualquier archivo FFDC que alcance la antigüedad máxima se suprime. De forma predeterminada, los archivos FFDC no se suprimen en función de la antigüedad del archivo. Especifica un entero positivo seguido de una unidad de tiempo, que puede ser horas (h) o minutos (m). Por ejemplo, especifique 30 minutos como 30m. Puede incluir varios valores en una sola entrada. Por ejemplo, 1h30m es equivalente a 90 minutos.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Antigüedad máxima antes de que se suprima un archivo FFDC</ext:label>
+                    <ext:variable>com.ibm.ws.logging.max.ffdc.age</ext:variable>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:simpleType name="variableType">
+        <xsd:restriction base="xsd:string">
+            <xsd:pattern value=".*$\{[^\s\}]*\}.*"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:simpleType name="location">
+        <xsd:union memberTypes="xsd:string variableType"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="hourDuration">
+        <xsd:union memberTypes="xsd:string variableType"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="booleanType">
+        <xsd:union memberTypes="xsd:boolean variableType"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="duration">
+        <xsd:union memberTypes="xsd:string variableType"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="dirLocation">
+        <xsd:union memberTypes="xsd:string variableType"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="intType">
+        <xsd:union memberTypes="xsd:int variableType"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="minuteDuration">
+        <xsd:union memberTypes="xsd:string variableType"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="factoryIdType">
+        <xsd:restriction base="xsd:string"/>
+    </xsd:simpleType>
+    <xsd:simpleType name="schemaPropertiesType">
+        <xsd:restriction base="xsd:string"/>
+    </xsd:simpleType>
+    <xsd:complexType name="includeType">
+        <xsd:annotation>
+            <xsd:documentation>Especifique un recurso de configuración que se va a incluir en la configuración del servidor.</xsd:documentation>
+            <xsd:appinfo>
+                <ext:label>Incluir</ext:label>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:attribute default="false" name="optional" type="xsd:boolean" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Permitir que se pase por alto el recurso incluido si no se encuentra.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>El recurso es opcional</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="location" type="location" use="required">
+            <xsd:annotation>
+                <xsd:documentation>Especifica la ubicación del recurso. El valor puede ser una vía de acceso de archivo, un directorio o un URI para un recurso remoto.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Ubicación</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute default="MERGE" name="onConflict" use="optional">
+            <xsd:annotation>
+                <xsd:documentation>Especifica el comportamiento que se utiliza para gestionar elementos cuando se encuentran conflictos.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>En conflicto</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+            <xsd:simpleType>
+                <xsd:union memberTypes="variableType">
+                    <xsd:simpleType>
+                        <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="MERGE">
+                                <xsd:annotation>
+                                    <xsd:documentation>Los elementos en conflicto se fusionarán juntos.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="REPLACE">
+                                <xsd:annotation>
+                                    <xsd:documentation>Cuando los elementos entran en conflicto, el elemento del archivo incluido sustituirá al elemento en conflicto.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="IGNORE">
+                                <xsd:annotation>
+                                    <xsd:documentation>Los elementos en conflicto en el archivo incluido se ignorarán.</xsd:documentation>
+                                </xsd:annotation>
+                            </xsd:enumeration>
+                        </xsd:restriction>
+                    </xsd:simpleType>
+                </xsd:union>
+            </xsd:simpleType>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="variableDefinitionType">
+        <xsd:annotation>
+            <xsd:documentation>Declarar una nueva variable especificando el nombre y valor de la variable.</xsd:documentation>
+            <xsd:appinfo>
+                <ext:label>Declaración de variable</ext:label>
+            </xsd:appinfo>
+        </xsd:annotation>
+        <xsd:attribute name="name" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>El nombre de la variable.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Nombre</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="value" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>Valor que se asignará a la variable.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Valor</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="defaultValue" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>El valor predeterminado que se asignará a la variable si no hay ningún valor disponible.</xsd:documentation>
+                <xsd:appinfo>
+                    <ext:label>Valor predeterminado</ext:label>
+                </xsd:appinfo>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+    <xsd:complexType name="serverType">
+        <xsd:choice maxOccurs="unbounded" minOccurs="0">
+            <xsd:element name="include" type="includeType"/>
+            <xsd:element name="variable" type="variableDefinitionType"/>
+            <xsd:element name="config" type="com.ibm.ws.config"/>
+            <xsd:element name="fileset" type="com.ibm.ws.kernel.metatype.helper.fileset-factory"/>
+            <xsd:element name="executor" type="com.ibm.ws.threading"/>
+            <xsd:element name="featureManager" type="com.ibm.ws.kernel.feature"/>
+            <xsd:element name="logging" type="com.ibm.ws.logging"/>
+        </xsd:choice>
+        <xsd:attribute name="description" type="xsd:string" use="optional"/>
+    </xsd:complexType>
+    <xsd:element name="client" type="serverType"/>
+    <xsd:element name="server" type="serverType"/>
+</xsd:schema>

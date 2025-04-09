@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h1>Lista de Productos</h1>
+<table id="productosTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Precio</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Los datos de los productos se insertarán aquí -->
+    </tbody>
+</table>
+
+<script>
+    // URL del endpoint REST
+    const apiUrl = '/api/productos';
+
+    // Función para obtener y mostrar los productos
+    function fetchProductos() {
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener los productos');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.getElementById('productosTable').getElementsByTagName('tbody')[0];
+                data.forEach(producto => {
+                    const row = tableBody.insertRow();
+                    row.insertCell(0).textContent = producto.id;
+                    row.insertCell(1).textContent = producto.nombre;
+                    row.insertCell(2).textContent = producto.precio;
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // Llamar a la función al cargar la página
+    window.onload = fetchProductos;
+</script>
+</body>
+</html>
